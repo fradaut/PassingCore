@@ -3,11 +3,11 @@ version: 1.0-SNAPSHOT
 main: tw.sac.passingcore.PassingCorePlugin
 api-version: '26.1.2'
 commands:
-  passingitem:
-    description: Give the decorative PassingCore custom item
-    usage: /passingitem [amount]
-    permission: passingcore.item
+  passgive:
+    description: Give a PassingCore plugin item
+    usage: /passgive [player] <item>
+    permission: passingcore.passgive
 permissions:
-  passingcore.item:
-    description: Allows getting the decorative PassingCore custom item
+  passingcore.passgive:
+    description: Allows giving PassingCore plugin items
     default: op
