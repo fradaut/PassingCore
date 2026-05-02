@@ -5,7 +5,7 @@ api-version: '26.1.2'
 commands:
   passgive:
     description: Give a PassingCore plugin item
-    usage: /passgive [player] <item>
+    usage: /passgive [player] <item> [amount]
     permission: passingcore.passgive
 permissions:
   passingcore.passgive:

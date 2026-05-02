@@ -1,12 +1,12 @@
 package tw.sac.passingcore.item;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
+import io.papermc.paper.datacomponent.DataComponentTypes;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -30,7 +30,18 @@ public final class CustomItemRegistry {
                                 .decoration(TextDecoration.ITALIC, false))
                 .aliases("pcoin", "p-coin", "pc")
                 .legacyIds("passing_core_token")
-                .lore(Component.text("A decorative custom item.", NamedTextColor.GRAY)
+                .lore(Component.text("是代幣，也是一種證明。", NamedTextColor.GRAY)
+                        .decoration(TextDecoration.ITALIC, false))
+                .build(plugin));
+        registry.register(new CustomItemDefinition.Builder(
+                        "fly_potion",
+                        Material.POTION,
+                        Component.text("飛行藥水", NamedTextColor.AQUA)
+                                .decoration(TextDecoration.ITALIC, false))
+                .aliases("flypotion", "fly-potion", "flight_potion")
+                .consumeAction(CustomItemAction.GRANT_FLIGHT)
+                .hideComponents(DataComponentTypes.POTION_CONTENTS)
+                .lore(Component.text("飲用後獲得 3 分鐘飛行能力。", NamedTextColor.GRAY)
                         .decoration(TextDecoration.ITALIC, false))
                 .build(plugin));
         return registry;
@@ -67,7 +78,7 @@ public final class CustomItemRegistry {
         }
     }
 
-    private Optional<CustomItemDefinition> findDefinition(ItemStack item) {
+    public Optional<CustomItemDefinition> findDefinition(ItemStack item) {
         return itemsById.values().stream()
                 .filter(definition -> definition.matches(item))
                 .findFirst();

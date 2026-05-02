@@ -1,0 +1,13 @@
+{
+  "providers": [
+    {
+      "type": "bitmap",
+      "file": "passingcore:ui/icon_fly_potion.png",
+      "ascent": 8,
+      "height": 8,
+      "chars": [
+        "\uE001"
+      ]
+    }
+  ]
+}

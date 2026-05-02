@@ -39,6 +39,14 @@ val syncResourceImages by tasks.registering(Copy::class) {
         rename { "p_coin.png" }
         into("assets/passingcore/textures/item")
     }
+    from("Resource/fly_potion.png") {
+        rename { "fly_potion.png" }
+        into("assets/passingcore/textures/item")
+    }
+    from("Resource/icon_fly_potion.png") {
+        rename { "icon_fly_potion.png" }
+        into("assets/passingcore/textures/ui")
+    }
     into("resourcepack")
 }
 

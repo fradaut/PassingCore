@@ -3,6 +3,9 @@ package tw.sac.passingcore.item;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.papermc.paper.datacomponent.DataComponentType;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.TooltipDisplay;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -17,19 +20,24 @@ public final class CustomItemDefinition {
     private final Material material;
     private final Component displayName;
     private final List<Component> lore;
+    private final List<DataComponentType> hiddenComponents;
+    private final CustomItemAction consumeAction;
     private final NamespacedKey itemTagKey;
     private final NamespacedKey itemModelKey;
     private final List<NamespacedKey> legacyItemTagKeys;
     private final List<NamespacedKey> legacyItemModelKeys;
 
     public CustomItemDefinition(String id, List<String> aliases, Material material, Component displayName,
-                                List<Component> lore, NamespacedKey itemTagKey, NamespacedKey itemModelKey,
+                                List<Component> lore, List<DataComponentType> hiddenComponents, CustomItemAction consumeAction,
+                                NamespacedKey itemTagKey, NamespacedKey itemModelKey,
                                 List<NamespacedKey> legacyItemTagKeys, List<NamespacedKey> legacyItemModelKeys) {
         this.id = id;
         this.aliases = List.copyOf(aliases);
         this.material = material;
         this.displayName = displayName;
         this.lore = List.copyOf(lore);
+        this.hiddenComponents = List.copyOf(hiddenComponents);
+        this.consumeAction = consumeAction;
         this.itemTagKey = itemTagKey;
         this.itemModelKey = itemModelKey;
         this.legacyItemTagKeys = List.copyOf(legacyItemTagKeys);
@@ -46,6 +54,14 @@ public final class CustomItemDefinition {
 
     public Component displayName() {
         return displayName;
+    }
+
+    public CustomItemAction consumeAction() {
+        return consumeAction;
+    }
+
+    public boolean isConsumable() {
+        return consumeAction != CustomItemAction.NONE;
     }
 
     public ItemStack createItem(int amount) {
@@ -77,6 +93,10 @@ public final class CustomItemDefinition {
             meta.getPersistentDataContainer().set(itemTagKey, PersistentDataType.BYTE, (byte) 1);
             legacyItemTagKeys.forEach(meta.getPersistentDataContainer()::remove);
         });
+        if (!hiddenComponents.isEmpty()) {
+            item.setData(DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplay.tooltipDisplay()
+                    .addHiddenComponents(hiddenComponents.toArray(DataComponentType[]::new)));
+        }
     }
 
     private boolean hasMatchingTag(ItemMeta meta) {
@@ -113,7 +133,9 @@ public final class CustomItemDefinition {
         private final Component displayName;
         private final List<String> aliases = new ArrayList<>();
         private final List<Component> lore = new ArrayList<>();
+        private final List<DataComponentType> hiddenComponents = new ArrayList<>();
         private final List<String> legacyIds = new ArrayList<>();
+        private CustomItemAction consumeAction = CustomItemAction.NONE;
 
         public Builder(String id, Material material, Component displayName) {
             this.id = id;
@@ -131,8 +153,18 @@ public final class CustomItemDefinition {
             return this;
         }
 
+        public Builder hideComponents(DataComponentType... hiddenComponents) {
+            this.hiddenComponents.addAll(List.of(hiddenComponents));
+            return this;
+        }
+
         public Builder legacyIds(String... legacyIds) {
             this.legacyIds.addAll(List.of(legacyIds));
+            return this;
+        }
+
+        public Builder consumeAction(CustomItemAction consumeAction) {
+            this.consumeAction = consumeAction;
             return this;
         }
 
@@ -150,6 +182,8 @@ public final class CustomItemDefinition {
                     material,
                     displayName,
                     lore,
+                    hiddenComponents,
+                    consumeAction,
                     new NamespacedKey(plugin, id),
                     new NamespacedKey(plugin, id),
                     legacyTagKeys,

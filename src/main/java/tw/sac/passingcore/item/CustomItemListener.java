@@ -13,13 +13,16 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
+import tw.sac.passingcore.effect.FlightEffectService;
 
 public final class CustomItemListener implements Listener {
 
     private final CustomItemRegistry itemRegistry;
+    private final FlightEffectService flightEffectService;
 
-    public CustomItemListener(CustomItemRegistry itemRegistry) {
+    public CustomItemListener(CustomItemRegistry itemRegistry, FlightEffectService flightEffectService) {
         this.itemRegistry = itemRegistry;
+        this.flightEffectService = flightEffectService;
     }
 
     @EventHandler
@@ -29,7 +32,8 @@ public final class CustomItemListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (!itemRegistry.isCustomItem(event.getItem())) {
+        CustomItemDefinition definition = itemRegistry.findDefinition(event.getItem()).orElse(null);
+        if (definition == null || definition.isConsumable()) {
             return;
         }
 
@@ -49,8 +53,19 @@ public final class CustomItemListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
-        if (itemRegistry.isCustomItem(event.getItem())) {
+        CustomItemDefinition definition = itemRegistry.findDefinition(event.getItem()).orElse(null);
+        if (definition == null) {
+            return;
+        }
+
+        if (!definition.isConsumable()) {
             event.setCancelled(true);
+            return;
+        }
+
+        if (definition.consumeAction() == CustomItemAction.GRANT_FLIGHT) {
+            event.setReplacement(ItemStack.empty());
+            flightEffectService.grant(event.getPlayer(), FlightEffectService.FLY_POTION_DURATION);
         }
     }
 

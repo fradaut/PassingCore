@@ -43,14 +43,15 @@ env GRADLE_USER_HOME=/Users/fradaut/IdeaProjects/PassingCore/.gradle-user-home .
 只保留一個取得插件物品的指令：
 
 ```text
-/passgive <item>
-/passgive <player> <item>
+/passgive <item> [amount]
+/passgive <player> <item> [amount]
 ```
 
 規則：
 
 - 玩家輸入 `/passgive <item>` 時給自己。
 - 玩家或 console 輸入 `/passgive <player> <item>` 時給指定在線玩家。
+- 數量 `[amount]` 可省略，預設為 `1`，目前允許 `1-64`。
 - console 不允許省略玩家。
 - 不要重新新增 `/hello`、`/passingitem` 或 `/passitem`。
 - 新增插件物品時，應透過 `CustomItemRegistry` 登記，並自然支援 `/passgive`，不要新增一個物品一個指令。
@@ -60,6 +61,9 @@ env GRADLE_USER_HOME=/Users/fradaut/IdeaProjects/PassingCore/.gradle-user-home .
 - `p_coin`
 - aliases：`pcoin`、`p-coin`、`pc`
 - legacy id：`passing_core_token`
+- `fly_potion`
+- aliases：`flypotion`、`fly-potion`、`flight_potion`
+- consume action：喝下後給予 3 分鐘飛行能力，並以 action bar 顯示 `飛行時間00:00` 倒數。
 
 ## 新增自訂物品流程
 
@@ -80,6 +84,9 @@ env GRADLE_USER_HOME=/Users/fradaut/IdeaProjects/PassingCore/.gradle-user-home .
 - `Resource/p_coin.png` 會在 Gradle `syncResourceImages` task 中同步為：
   - `resourcepack/pack.png`
   - `resourcepack/assets/passingcore/textures/item/p_coin.png`
+- `Resource/fly_potion.png` 會同步為 `resourcepack/assets/passingcore/textures/item/fly_potion.png`。
+- `Resource/icon_fly_potion.png` 會同步為 `resourcepack/assets/passingcore/textures/ui/icon_fly_potion.png`。
+- 飛行藥水倒數 UI 使用 `resourcepack/assets/passingcore/font/hud.json` 定義自訂 glyph，插件以 action bar 顯示圖示與倒數。純插件加材質包無法真正改寫 vanilla hotbar 版面；若要更精準的位置需 client mod。
 - `resourcepack/assets/passingcore/items/*.json` 是新版 item model definition。
 - `resourcepack/assets/passingcore/models/item/*.json` 是實際 item model。
 - 不要把 `.DS_Store` 放進材質包 zip；`resourcePack` task 已排除 `**/.DS_Store`。
