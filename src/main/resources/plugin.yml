@@ -1,7 +1,7 @@
 name: PassingCore
 version: 1.0-SNAPSHOT
 main: tw.sac.passingcore.PassingCorePlugin
-api-version: '26.1.2'
+api-version: '26.2'
 commands:
   passgive:
     description: Give a PassingCore plugin item

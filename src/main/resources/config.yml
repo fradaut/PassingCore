@@ -1,0 +1,8 @@
+resource-pack:
+  enabled: true
+  required: true
+  bind-address: 0.0.0.0
+  port: 8123
+  # 245 passing 伺服器對外提供資源包的固定下載網址。
+  public-url: "http://mtdl.sac.tw:8123/PassingCore-resourcepack.zip"
+  prompt: "此伺服器需要 PassingCore 資源包以顯示自訂物品。"

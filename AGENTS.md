@@ -4,7 +4,7 @@
 
 ## 專案概觀
 
-PassingCore 是一個 Paper Minecraft 插件，目標版本為 Minecraft/Paper `26.1.2`。目前插件提供單一取得物品指令 `/passgive`，並搭配 `resourcepack/` 內的材質包實作自訂物品外觀。
+PassingCore 是一個 Paper Minecraft 插件，目標版本為 Minecraft/Paper `26.2` build `129`。目前插件提供單一取得物品指令 `/passgive`，並搭配 `resourcepack/` 內的材質包實作自訂物品外觀。
 
 主要產物：
 
@@ -16,7 +16,7 @@ PassingCore 是一個 Paper Minecraft 插件，目標版本為 Minecraft/Paper `
 
 - Java toolchain：Java `25`
 - Build tool：Gradle wrapper，請使用 `./gradlew`
-- Paper API：`io.papermc.paper:paper-api:26.1.2.build.+`
+- Paper API：`io.papermc.paper:paper-api:26.2.build.129-stable`
 - 插件主類別：`tw.sac.passingcore.PassingCorePlugin`
 - Plugin metadata：`src/main/resources/plugin.yml`
 
@@ -28,6 +28,23 @@ env GRADLE_USER_HOME=/Users/fradaut/IdeaProjects/PassingCore/.gradle-user-home .
 
 如果在沙盒內執行 Gradle 遇到 socket 或 lock 權限問題，需要用 escalated 權限重跑同一個命令。
 
+## 實際伺服器環境
+
+以下資訊已由伺服器檔案與啟動紀錄確認，不要以猜測值取代：
+
+- 伺服器目錄：`/Users/fradaut/Run/MinecraftServer/paperMC_26.2#129`
+- 對外主機名稱：`mtdl.sac.tw`
+- Minecraft 連線位址：`mtdl.sac.tw:25565`
+- 資源包網址：`http://mtdl.sac.tw:8123/PassingCore-resourcepack.zip`
+- Minecraft：`26.2`
+- Paper：`26.2-129` stable，commit `9240f586a4aa2623b3581e331817d527cbae2723`，API `26.2.build.129-stable`
+- Java runtime：Eclipse Adoptium Temurin `25.0.2+10-LTS`
+- 主機環境：macOS arm64
+- `server-ip` 留空並監聽所有介面，`online-mode=true`
+- 未啟用 BungeeCord、Velocity 或 PROXY protocol。
+- 原生 `server.properties` 資源包欄位保持空白，避免和 PassingCore 的資源包要求重複；資源包由插件在玩家加入時發送。
+- 伺服器設定檔包含敏感值，讀取時不得將 secret、密碼或 token 寫入專案或回覆。
+
 ## 目錄與職責
 
 - `src/main/java/tw/sac/passingcore/PassingCorePlugin.java`：插件啟動入口，只做註冊與 wiring，避免塞業務邏輯。
@@ -35,6 +52,7 @@ env GRADLE_USER_HOME=/Users/fradaut/IdeaProjects/PassingCore/.gradle-user-home .
 - `src/main/java/tw/sac/passingcore/item/CustomItemRegistry.java`：所有插件自訂物品的登記處。
 - `src/main/java/tw/sac/passingcore/item/CustomItemDefinition.java`：單一自訂物品的建立、辨識、舊 id 相容與 meta 套用。
 - `src/main/java/tw/sac/passingcore/item/CustomItemListener.java`：阻止自訂物品使用、放置、消耗，以及防止被 craft/anvil/smithing/grindstone 產生結果。
+- `src/main/java/tw/sac/passingcore/resourcepack/ResourcePackService.java`：解出、提供與發送伺服器資源包。
 - `Resource/`：原始圖片來源。目前 `Resource/p_coin.png` 是 P Coin 圖片來源。
 - `resourcepack/`：Minecraft resource pack 原始內容。
 
@@ -90,6 +108,8 @@ env GRADLE_USER_HOME=/Users/fradaut/IdeaProjects/PassingCore/.gradle-user-home .
 - `resourcepack/assets/passingcore/items/*.json` 是新版 item model definition。
 - `resourcepack/assets/passingcore/models/item/*.json` 是實際 item model。
 - 不要把 `.DS_Store` 放進材質包 zip；`resourcePack` task 已排除 `**/.DS_Store`。
+- 材質包 zip 會被封裝進插件 jar；插件啟動時解出至 `plugins/PassingCore/resourcepack.zip`，並自動計算 SHA-1 後發送給玩家。
+- 內建 HTTP 下載服務使用 `8123`，固定公開網址為 `http://mtdl.sac.tw:8123/PassingCore-resourcepack.zip`。
 
 ## 編碼與風格
 
@@ -104,6 +124,7 @@ env GRADLE_USER_HOME=/Users/fradaut/IdeaProjects/PassingCore/.gradle-user-home .
 - 不要提交 `build/`、`.gradle/`、`.gradle-user-home/`、`.idea/`、`.DS_Store`。
 - 可以提交 Gradle wrapper：`gradlew`、`gradlew.bat`、`gradle/wrapper/*`。
 - 修改後至少執行 `./gradlew build`。
+- 本機 `build` 完成後會自動部署 jar、資源包與插件設定檔到 `/Users/fradaut/Run/MinecraftServer/paperMC_26.2#129/plugins/`；可用 `-PpassingCoreServerDir=...` 覆寫。
 - 推送目標 remote：`origin git@github.com:fradaut/PassingCore.git`。
 - 若使用 SSH 推送失敗，先確認 `ssh -T git@github.com` 是否成功。
 
